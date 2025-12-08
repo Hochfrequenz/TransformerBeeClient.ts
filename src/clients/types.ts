@@ -1,4 +1,4 @@
-import { BOneyComb, EdifactFormatVersion } from "../models";
+import { BOneyComb, EdifactFormatVersion, Marktnachricht } from "../models";
 
 /**
  * Configuration options for the transformer.bee client.
@@ -69,7 +69,7 @@ export interface TransformerBeeClient {
    *
    * @param edifact - The EDIFACT message string
    * @param formatVersion - The EDIFACT format version
-   * @returns A Promise resolving to the converted BOneyComb
+   * @returns A Promise resolving to an array of Marktnachricht objects
    * @throws {EdifactToBo4eConversionError} If the conversion fails
    * @throws {ApiError} If the API returns an error
    * @throws {NetworkError} If a network error occurs
@@ -77,10 +77,12 @@ export interface TransformerBeeClient {
    * @example
    * ```typescript
    * const edifact = "UNA:+.? 'UNB+UNOC:3+...";
-   * const boneyComb = await client.edifactToBo4e(edifact, EdifactFormatVersion.FV2310);
+   * const messages = await client.edifactToBo4e(edifact, EdifactFormatVersion.FV2310);
+   * // Each message contains transaktionen (list of BOneyComb)
+   * const firstTransaction = messages[0].transaktionen?.[0];
    * ```
    */
-  edifactToBo4e(edifact: string, formatVersion: EdifactFormatVersion): Promise<BOneyComb>;
+  edifactToBo4e(edifact: string, formatVersion: EdifactFormatVersion): Promise<Marktnachricht[]>;
 
   /**
    * Converts a BO4E object (BOneyComb) to EDIFACT format.

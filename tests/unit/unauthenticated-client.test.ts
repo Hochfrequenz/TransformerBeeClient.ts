@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { UnauthenticatedTransformerBeeClient } from "../../src/clients/unauthenticated-client";
-import { EdifactFormatVersion, BOneyComb } from "../../src/models";
+import { EdifactFormatVersion, BOneyComb, Marktnachricht } from "../../src/models";
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -54,24 +54,30 @@ describe("UnauthenticatedTransformerBeeClient", () => {
 
   describe("edifactToBo4e", () => {
     const sampleEdifact = "UNA:+.? 'UNB+UNOC:3+sender+receiver+date+ref'";
-    const sampleBoneyComb: BOneyComb = {
-      stammdaten: [{ typ: "MARKTLOKATION", id: "123" }],
-      transaktionsdaten: { nachrichtentyp: "UTILMD" },
+    const sampleMarktnachricht: Marktnachricht = {
+      unh: "test-unh",
+      transaktionen: [
+        {
+          stammdaten: [{ typ: "MARKTLOKATION", id: "123" }],
+          transaktionsdaten: { nachrichtentyp: "UTILMD" },
+        },
+      ],
     };
+    const sampleMarktnachrichtArray = [sampleMarktnachricht];
 
     it("should successfully convert EDIFACT to BO4E", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       const result = await client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310);
 
-      expect(result).toEqual(sampleBoneyComb);
+      expect(result).toEqual(sampleMarktnachrichtArray);
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/edifact/bo4e"),
+        expect.stringContaining("/v1/transformer/EdiToBo4E"),
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
@@ -81,18 +87,20 @@ describe("UnauthenticatedTransformerBeeClient", () => {
       );
     });
 
-    it("should include format version in URL", async () => {
+    it("should include format version in request body", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("formatVersion=FV2310"),
-        expect.anything()
+        expect.anything(),
+        expect.objectContaining({
+          body: expect.stringContaining('"FormatPackage":"FV2310"'),
+        })
       );
     });
 
@@ -141,7 +149,7 @@ describe("UnauthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => sampleEdifact,
+        text: async () => JSON.stringify({ EDI: sampleEdifact }),
       });
 
       const result = await client.bo4eToEdifact(sampleBoneyComb, EdifactFormatVersion.FV2310);
@@ -149,26 +157,28 @@ describe("UnauthenticatedTransformerBeeClient", () => {
       expect(result).toBe(sampleEdifact);
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/bo4e/edifact"),
+        expect.stringContaining("/v1/transformer/Bo4ETransactionToEdi"),
         expect.objectContaining({
           method: "POST",
-          body: JSON.stringify(sampleBoneyComb),
+          body: expect.stringContaining('"BO4E"'),
         })
       );
     });
 
-    it("should include format version in URL", async () => {
+    it("should include format version in request body", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => sampleEdifact,
+        text: async () => JSON.stringify({ EDI: sampleEdifact }),
       });
 
       await client.bo4eToEdifact(sampleBoneyComb, EdifactFormatVersion.FV2404);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("formatVersion=FV2404"),
-        expect.anything()
+        expect.anything(),
+        expect.objectContaining({
+          body: expect.stringContaining('"FormatPackage":"FV2404"'),
+        })
       );
     });
 
@@ -204,10 +214,11 @@ describe("UnauthenticatedTransformerBeeClient", () => {
         },
       });
 
+      const marktnachrichtArray: Marktnachricht[] = [];
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify({ stammdaten: [], transaktionsdaten: {} }),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(marktnachrichtArray) }),
       });
 
       await clientWithHeaders.edifactToBo4e("test", EdifactFormatVersion.FV2310);

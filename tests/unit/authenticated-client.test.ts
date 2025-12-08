@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { AuthenticatedTransformerBeeClient } from "../../src/clients/authenticated-client";
-import { EdifactFormatVersion, BOneyComb, AuthenticationError } from "../../src/models";
+import {
+  EdifactFormatVersion,
+  BOneyComb,
+  AuthenticationError,
+  Marktnachricht,
+} from "../../src/models";
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -26,6 +31,8 @@ describe("AuthenticatedTransformerBeeClient", () => {
     stammdaten: [],
     transaktionsdaten: {},
   };
+
+  const sampleMarktnachrichtArray: Marktnachricht[] = [{ transaktionen: [sampleBoneyComb] }];
 
   beforeEach(() => {
     client = new AuthenticatedTransformerBeeClient(defaultConfig);
@@ -73,7 +80,7 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test", EdifactFormatVersion.FV2310);
@@ -113,13 +120,13 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test1", EdifactFormatVersion.FV2310);
@@ -140,7 +147,7 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test1", EdifactFormatVersion.FV2310);
@@ -161,7 +168,7 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test2", EdifactFormatVersion.FV2310);
@@ -206,7 +213,7 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test1", EdifactFormatVersion.FV2310);
@@ -226,7 +233,7 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test2", EdifactFormatVersion.FV2310);
@@ -246,14 +253,14 @@ describe("AuthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => "UNA:+.? '...",
+        text: async () => JSON.stringify({ EDI: "UNA:+.? '..." }),
       });
 
       await client.bo4eToEdifact(sampleBoneyComb, EdifactFormatVersion.FV2310);
 
       expect(mockFetch).toHaveBeenNthCalledWith(
         2,
-        expect.stringContaining("/api/v1/bo4e/edifact"),
+        expect.stringContaining("/v1/transformer/Bo4ETransactionToEdi"),
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: "Bearer mock-access-token",

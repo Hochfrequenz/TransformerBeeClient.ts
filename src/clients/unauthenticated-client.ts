@@ -5,8 +5,9 @@ import {
   Bo4eToEdifactConversionError,
   EdifactFormatVersion,
   EdifactToBo4eConversionError,
+  Marktnachricht,
   NetworkError,
-  parseBOneyComb,
+  parseMarktnachrichtArray,
   TimeoutError,
 } from "../models";
 
@@ -21,8 +22,8 @@ const DEFAULT_TIMEOUT = 30000;
  * API endpoints for transformer.bee.
  */
 const API_ENDPOINTS = {
-  EDIFACT_TO_BO4E: "/api/v1/edifact/bo4e",
-  BO4E_TO_EDIFACT: "/api/v1/bo4e/edifact",
+  EDIFACT_TO_BO4E: "/v1/transformer/EdiToBo4E",
+  BO4E_TO_EDIFACT: "/v1/transformer/Bo4ETransactionToEdi",
 } as const;
 
 /**
@@ -128,15 +129,36 @@ export class UnauthenticatedTransformerBeeClient implements TransformerBeeClient
    *
    * @param edifact - The EDIFACT message string
    * @param formatVersion - The EDIFACT format version
-   * @returns A Promise resolving to the converted BOneyComb
+   * @returns A Promise resolving to an array of Marktnachricht objects
    */
-  async edifactToBo4e(edifact: string, formatVersion: EdifactFormatVersion): Promise<BOneyComb> {
-    const endpoint = `${API_ENDPOINTS.EDIFACT_TO_BO4E}?formatVersion=${formatVersion}`;
+  async edifactToBo4e(
+    edifact: string,
+    formatVersion: EdifactFormatVersion
+  ): Promise<Marktnachricht[]> {
+    const endpoint = API_ENDPOINTS.EDIFACT_TO_BO4E;
+    const requestBody = {
+      EDI: edifact,
+      FormatPackage: formatVersion,
+    };
 
     try {
-      const responseText = await this.makeRequest(endpoint, edifact);
-      const responseData: unknown = JSON.parse(responseText);
-      return parseBOneyComb(responseData);
+      const responseText = await this.makeRequest(endpoint, requestBody);
+      const responseData = JSON.parse(responseText) as { BO4E: string };
+
+      // The API returns the Marktnachricht array as a JSON string in the BO4E field
+      if (responseData.BO4E === undefined || responseData.BO4E === null) {
+        throw new Error("Response missing BO4E field");
+      }
+
+      // Handle empty BO4E field
+      if (responseData.BO4E === "") {
+        return [];
+      }
+
+      // Parse the BO4E JSON string (replace escaped newlines)
+      const bo4eJsonString = responseData.BO4E.replace(/\\n/g, "\n");
+      const marktnachrichtData: unknown = JSON.parse(bo4eJsonString);
+      return parseMarktnachrichtArray(marktnachrichtData);
     } catch (error) {
       if (error instanceof AuthenticationError) {
         throw error;
@@ -166,11 +188,22 @@ export class UnauthenticatedTransformerBeeClient implements TransformerBeeClient
    * @returns A Promise resolving to the EDIFACT message string
    */
   async bo4eToEdifact(boneyComb: BOneyComb, formatVersion: EdifactFormatVersion): Promise<string> {
-    const endpoint = `${API_ENDPOINTS.BO4E_TO_EDIFACT}?formatVersion=${formatVersion}`;
+    const endpoint = API_ENDPOINTS.BO4E_TO_EDIFACT;
+    const requestBody = {
+      BO4E: JSON.stringify(boneyComb),
+      FormatPackage: formatVersion,
+    };
 
     try {
-      const responseText = await this.makeRequest(endpoint, boneyComb);
-      return responseText;
+      const responseText = await this.makeRequest(endpoint, requestBody);
+      const responseData = JSON.parse(responseText) as { EDI: string };
+
+      // The API returns the EDIFACT message in the EDI field
+      if (!responseData.EDI) {
+        throw new Error("Response missing EDI field");
+      }
+
+      return responseData.EDI;
     } catch (error) {
       if (error instanceof AuthenticationError) {
         throw error;

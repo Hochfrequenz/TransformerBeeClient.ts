@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { PreauthorizedTransformerBeeClient } from "../../src/clients/preauthorized-client";
-import { EdifactFormatVersion, BOneyComb } from "../../src/models";
+import { EdifactFormatVersion, BOneyComb, Marktnachricht } from "../../src/models";
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -19,6 +19,8 @@ describe("PreauthorizedTransformerBeeClient", () => {
     stammdaten: [],
     transaktionsdaten: {},
   };
+
+  const sampleMarktnachrichtArray: Marktnachricht[] = [{ transaktionen: [sampleBoneyComb] }];
 
   beforeEach(() => {
     client = new PreauthorizedTransformerBeeClient(defaultConfig);
@@ -65,7 +67,7 @@ describe("PreauthorizedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test-edifact", EdifactFormatVersion.FV2310);
@@ -84,29 +86,31 @@ describe("PreauthorizedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test-edifact", EdifactFormatVersion.FV2310);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/edifact/bo4e"),
+        expect.stringContaining("/v1/transformer/EdiToBo4E"),
         expect.anything()
       );
     });
 
-    it("should include format version in query params", async () => {
+    it("should include format version in request body", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await client.edifactToBo4e("test-edifact", EdifactFormatVersion.FV2404);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("formatVersion=FV2404"),
-        expect.anything()
+        expect.anything(),
+        expect.objectContaining({
+          body: expect.stringContaining('"FormatPackage":"FV2404"'),
+        })
       );
     });
   });
@@ -116,7 +120,7 @@ describe("PreauthorizedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => "UNA:+.? '...",
+        text: async () => JSON.stringify({ EDI: "UNA:+.? '..." }),
       });
 
       await client.bo4eToEdifact(sampleBoneyComb, EdifactFormatVersion.FV2310);
@@ -135,13 +139,13 @@ describe("PreauthorizedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => "UNA:+.? '...",
+        text: async () => JSON.stringify({ EDI: "UNA:+.? '..." }),
       });
 
       await client.bo4eToEdifact(sampleBoneyComb, EdifactFormatVersion.FV2310);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/bo4e/edifact"),
+        expect.stringContaining("/v1/transformer/Bo4ETransactionToEdi"),
         expect.anything()
       );
     });
@@ -157,7 +161,7 @@ describe("PreauthorizedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await basicClient.edifactToBo4e("test", EdifactFormatVersion.FV2310);
@@ -183,7 +187,7 @@ describe("PreauthorizedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify(sampleBoneyComb),
+        text: async () => JSON.stringify({ BO4E: JSON.stringify(sampleMarktnachrichtArray) }),
       });
 
       await clientWithHeaders.edifactToBo4e("test", EdifactFormatVersion.FV2310);
