@@ -8,6 +8,7 @@ jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
+    environment: release
     # Required for npm OIDC trusted publishing
     permissions:
       contents: read
