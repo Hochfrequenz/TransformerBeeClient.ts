@@ -1,0 +1,41 @@
+{
+  "stammdaten": [
+    {
+      "boTyp": "MARKTLOKATION",
+      "versionStruktur": "1",
+      "marktlokationsId": "51238696781",
+      "sppisteGeraetezuordnungVorhanden": false,
+      "energierichtung": "AUSSP",
+      "bilanzierungsmethode": "SLP",
+      "netzebene": "NSP",
+      "lokationsadresse": {
+        "postleitzahl": "82031",
+        "ort": "Grünwald",
+        "strasse": "Nördliche Münchner Straße",
+        "hausnummer": "27A",
+        "landescode": "DE"
+      }
+    },
+    {
+      "boTyp": "GESCHAEFTSPARTNER",
+      "versionStruktur": "1",
+      "anrede": "HERR",
+      "name1": "Mustermann",
+      "name2": "Max",
+      "gewerbekennzeichnung": false,
+      "partneradresse": {
+        "postleitzahl": "82031",
+        "ort": "Grünwald",
+        "strasse": "Musterstraße",
+        "hausnummer": "1",
+        "landescode": "DE"
+      }
+    }
+  ],
+  "transaktionsdaten": {
+    "nachrichtentyp": "UTILMD",
+    "pruefidentifikator": "11042",
+    "dokumentennummer": "UTILMD00000001",
+    "nachrichtendatum": "2023-10-15T12:00:00Z"
+  }
+}
