@@ -104,9 +104,9 @@ describe("UnauthenticatedTransformerBeeClient", () => {
         text: async () => "Invalid EDIFACT",
       });
 
-      await expect(client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310)).rejects.toThrow(
-        "Failed to convert EDIFACT to BO4E"
-      );
+      await expect(
+        client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310)
+      ).rejects.toThrow("Failed to convert EDIFACT to BO4E");
     });
 
     it("should throw EdifactToBo4eConversionError on invalid JSON response", async () => {
@@ -116,17 +116,17 @@ describe("UnauthenticatedTransformerBeeClient", () => {
         text: async () => "not valid json",
       });
 
-      await expect(client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310)).rejects.toThrow(
-        "Failed to parse conversion response"
-      );
+      await expect(
+        client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310)
+      ).rejects.toThrow("Failed to parse conversion response");
     });
 
     it("should throw EdifactToBo4eConversionError on network error", async () => {
       mockFetch.mockRejectedValueOnce(new Error("Network failure"));
 
-      await expect(client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310)).rejects.toThrow(
-        "Failed to convert EDIFACT to BO4E"
-      );
+      await expect(
+        client.edifactToBo4e(sampleEdifact, EdifactFormatVersion.FV2310)
+      ).rejects.toThrow("Failed to convert EDIFACT to BO4E");
     });
   });
 
@@ -207,8 +207,7 @@ describe("UnauthenticatedTransformerBeeClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () =>
-          JSON.stringify({ stammdaten: [], transaktionsdaten: {} }),
+        text: async () => JSON.stringify({ stammdaten: [], transaktionsdaten: {} }),
       });
 
       await clientWithHeaders.edifactToBo4e("test", EdifactFormatVersion.FV2310);

@@ -68,10 +68,7 @@ UNT+12+00000000000001'
 UNZ+1+00000000000001'`;
 
     it("should convert EDIFACT to BO4E", async () => {
-      const result = await client.edifactToBo4e(
-        sampleUtilmdEdifact,
-        EdifactFormatVersion.FV2310
-      );
+      const result = await client.edifactToBo4e(sampleUtilmdEdifact, EdifactFormatVersion.FV2310);
 
       expect(result).toBeDefined();
       expect(result.stammdaten).toBeDefined();
@@ -103,10 +100,7 @@ UNZ+1+00000000000001'`;
     };
 
     it("should convert BO4E to EDIFACT", async () => {
-      const result = await client.bo4eToEdifact(
-        sampleBoneyComb,
-        EdifactFormatVersion.FV2310
-      );
+      const result = await client.bo4eToEdifact(sampleBoneyComb, EdifactFormatVersion.FV2310);
 
       expect(result).toBeDefined();
       expect(typeof result).toBe("string");
@@ -132,26 +126,18 @@ UNT+10+00000000000001'
 UNZ+1+00000000000001'`;
 
       // Convert to BO4E
-      const boneyComb = await client.edifactToBo4e(
-        originalEdifact,
-        EdifactFormatVersion.FV2310
-      );
+      const boneyComb = await client.edifactToBo4e(originalEdifact, EdifactFormatVersion.FV2310);
 
       expect(boneyComb).toBeDefined();
 
       // Convert back to EDIFACT
-      const resultEdifact = await client.bo4eToEdifact(
-        boneyComb,
-        EdifactFormatVersion.FV2310
-      );
+      const resultEdifact = await client.bo4eToEdifact(boneyComb, EdifactFormatVersion.FV2310);
 
       expect(resultEdifact).toBeDefined();
       expect(typeof resultEdifact).toBe("string");
 
       // The resulting EDIFACT should be valid (starts with UNA or UNB)
-      expect(
-        resultEdifact.startsWith("UNA") || resultEdifact.startsWith("UNB")
-      ).toBe(true);
+      expect(resultEdifact.startsWith("UNA") || resultEdifact.startsWith("UNB")).toBe(true);
     });
   });
 });

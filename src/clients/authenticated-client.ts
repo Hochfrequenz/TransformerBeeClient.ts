@@ -6,7 +6,8 @@ import { UnauthenticatedTransformerBeeClient } from "./unauthenticated-client";
 /**
  * Default OAuth2 token endpoint for Hochfrequenz services.
  */
-const DEFAULT_TOKEN_ENDPOINT = "https://auth.hochfrequenz.de/realms/utilibee/protocol/openid-connect/token";
+const DEFAULT_TOKEN_ENDPOINT =
+  "https://auth.hochfrequenz.de/realms/utilibee/protocol/openid-connect/token";
 
 /**
  * Default OAuth2 scope.

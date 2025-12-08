@@ -1,5 +1,6 @@
 import {
   ApiError,
+  AuthenticationError,
   BOneyComb,
   Bo4eToEdifactConversionError,
   EdifactFormatVersion,
@@ -60,6 +61,7 @@ export class UnauthenticatedTransformerBeeClient implements TransformerBeeClient
    * Gets the headers to include in requests.
    * Override this in subclasses to add authentication headers.
    */
+  // eslint-disable-next-line @typescript-eslint/require-await -- async for subclass override compatibility
   protected async getHeaders(): Promise<Record<string, string>> {
     return {
       "Content-Type": "application/json",
@@ -136,7 +138,14 @@ export class UnauthenticatedTransformerBeeClient implements TransformerBeeClient
       const responseData: unknown = JSON.parse(responseText);
       return parseBOneyComb(responseData);
     } catch (error) {
-      if (error instanceof ApiError || error instanceof NetworkError || error instanceof TimeoutError) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      if (
+        error instanceof ApiError ||
+        error instanceof NetworkError ||
+        error instanceof TimeoutError
+      ) {
         throw new EdifactToBo4eConversionError(
           `Failed to convert EDIFACT to BO4E: ${error.message}`,
           edifact
@@ -163,7 +172,14 @@ export class UnauthenticatedTransformerBeeClient implements TransformerBeeClient
       const responseText = await this.makeRequest(endpoint, boneyComb);
       return responseText;
     } catch (error) {
-      if (error instanceof ApiError || error instanceof NetworkError || error instanceof TimeoutError) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      if (
+        error instanceof ApiError ||
+        error instanceof NetworkError ||
+        error instanceof TimeoutError
+      ) {
         throw new Bo4eToEdifactConversionError(
           `Failed to convert BO4E to EDIFACT: ${error.message}`,
           boneyComb

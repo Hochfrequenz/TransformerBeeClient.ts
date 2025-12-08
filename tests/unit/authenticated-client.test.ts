@@ -1,11 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { AuthenticatedTransformerBeeClient } from "../../src/clients/authenticated-client";
-import {
-  EdifactFormatVersion,
-  BOneyComb,
-  AuthenticationError,
-} from "../../src/models";
+import { EdifactFormatVersion, BOneyComb, AuthenticationError } from "../../src/models";
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -182,9 +178,9 @@ describe("AuthenticatedTransformerBeeClient", () => {
         text: async () => "Invalid credentials",
       });
 
-      await expect(
-        client.edifactToBo4e("test", EdifactFormatVersion.FV2310)
-      ).rejects.toThrow(AuthenticationError);
+      await expect(client.edifactToBo4e("test", EdifactFormatVersion.FV2310)).rejects.toThrow(
+        AuthenticationError
+      );
     });
 
     it("should throw AuthenticationError when token response missing access_token", async () => {
@@ -193,9 +189,9 @@ describe("AuthenticatedTransformerBeeClient", () => {
         json: async () => ({ token_type: "Bearer" }), // Missing access_token
       });
 
-      await expect(
-        client.edifactToBo4e("test", EdifactFormatVersion.FV2310)
-      ).rejects.toThrow("Token response missing access_token");
+      await expect(client.edifactToBo4e("test", EdifactFormatVersion.FV2310)).rejects.toThrow(
+        "Token response missing access_token"
+      );
     });
   });
 

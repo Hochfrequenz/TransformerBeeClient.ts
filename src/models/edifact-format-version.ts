@@ -40,10 +40,9 @@ export function getFormatVersionDescription(version: EdifactFormatVersion): stri
  * @throws Error if the string does not match a valid version
  */
 export function parseEdifactFormatVersion(value: string): EdifactFormatVersion {
-  const version = Object.values(EdifactFormatVersion).find((v) => v === value);
-  if (!version) {
-    const validVersions = Object.values(EdifactFormatVersion).join(", ");
-    throw new Error(`Invalid EDIFACT format version: '${value}'. Valid values are: ${validVersions}`);
+  if (Object.values(EdifactFormatVersion).includes(value as EdifactFormatVersion)) {
+    return value as EdifactFormatVersion;
   }
-  return version;
+  const validVersions = Object.values(EdifactFormatVersion).join(", ");
+  throw new Error(`Invalid EDIFACT format version: '${value}'. Valid values are: ${validVersions}`);
 }
