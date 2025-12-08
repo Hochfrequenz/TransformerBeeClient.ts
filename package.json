@@ -1,0 +1,74 @@
+{
+  "name": "transformer-bee-client",
+  "version": "0.1.0",
+  "description": "An async TypeScript/JavaScript client for transformer.bee aka edifact-bo4e-converter",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "eslint src tests --ext .ts",
+    "lint:fix": "eslint src tests --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "bo4e",
+    "edifact",
+    "transformer.bee",
+    "energy",
+    "german-utilities",
+    "marktkommunikation"
+  ],
+  "author": "Hochfrequenz Unternehmensberatung GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hochfrequenz/TransformerBeeClient.ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Hochfrequenz/TransformerBeeClient.ts/issues"
+  },
+  "homepage": "https://github.com/Hochfrequenz/TransformerBeeClient.ts#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.0",
+    "msw": "^2.0.0",
+    "prettier": "^3.1.0",
+    "testcontainers": "^11.9.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  }
+}

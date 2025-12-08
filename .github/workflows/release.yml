@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    # Required for npm OIDC trusted publishing
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build package
+        run: npm run build
+
+      # Publish using OIDC trusted publishing (no token required)
+      # Requires npm >= 11.5.1 (bundled with Node.js 22+)
+      # Configure trusted publisher at: https://www.npmjs.com/package/transformer-bee-client/access
+      # See: https://docs.npmjs.com/trusted-publishers/
+      - name: Publish to npm
+        run: npm publish --access public
