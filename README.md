@@ -15,8 +15,9 @@ It allows you to convert EDIFACT messages to BO4E and vice versa by speaking to 
 ## Features
 
 - ✅ Full TypeScript support with strict typing
-- ✅ Both authenticated (OAuth2) and unauthenticated clients
-- ✅ Automatic token management and refresh
+- ✅ Multiple client types: unauthenticated, preauthorized (custom auth header), and OAuth2
+- ✅ Automatic OAuth2 token management and refresh
+- ✅ Helper functions to determine format version from date (`getEdifactFormatVersion`, `getCurrentEdifactFormatVersion`)
 - ✅ Zero runtime dependencies (only `zod` for schema validation)
 - ✅ Works in Node.js 18+
 - ✅ ESM and CommonJS support
@@ -73,7 +74,35 @@ console.log(boneyComb.stammdaten);
 console.log(boneyComb.transaktionsdaten);
 ```
 
-### Authenticated Client (Production)
+### Preauthorized Client (with existing token)
+
+If you already have an authorization token (e.g., from another service or a custom auth flow):
+
+```typescript
+import {
+  PreauthorizedTransformerBeeClient,
+  EdifactFormatVersion,
+} from "transformer-bee-client";
+
+// Using a pre-acquired Bearer token
+const client = new PreauthorizedTransformerBeeClient({
+  baseUrl: "https://transformer.utilibee.io",
+  authorizationHeader: "Bearer your-pre-acquired-token",
+});
+
+// Or using Basic auth
+const basicClient = new PreauthorizedTransformerBeeClient({
+  baseUrl: "https://transformer.utilibee.io",
+  authorizationHeader: "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+});
+
+const boneyComb = await client.edifactToBo4e(
+  edifactMessage,
+  EdifactFormatVersion.FV2310
+);
+```
+
+### Authenticated Client (Production with OAuth2)
 
 If Hochfrequenz provided you with a client ID and secret:
 
@@ -116,15 +145,36 @@ console.log(edifact);
 
 ### EdifactFormatVersion
 
-An enum representing the EDIFACT format versions:
+An enum representing the EDIFACT format versions (see [efoli](https://github.com/Hochfrequenz/efoli) for the source of truth):
 
 | Version | Description |
 |---------|-------------|
-| `FV2304` | MIG/AHB versions valid since 2023-04-01 |
-| `FV2310` | MIG/AHB versions valid since 2023-10-01 |
-| `FV2404` | MIG/AHB versions valid since 2024-04-01 |
-| `FV2410` | MIG/AHB versions valid since 2024-10-01 |
-| `FV2504` | MIG/AHB versions valid since 2025-04-01 |
+| `FV2104` | MIG/AHB versions valid from 2021-04-01 until 2021-10-01 |
+| `FV2110` | MIG/AHB versions valid from 2021-10-01 until 2022-04-01 |
+| `FV2210` | MIG/AHB versions valid from 2022-10-01 onwards (MaKo 2022) |
+| `FV2304` | MIG/AHB versions valid from 2023-04-01 onwards |
+| `FV2310` | MIG/AHB versions valid from 2023-10-01 onwards |
+| `FV2404` | MIG/AHB versions valid from 2024-04-01 onwards |
+| `FV2410` | MIG/AHB versions valid from 2024-10-01 onwards |
+| `FV2504` | MIG/AHB versions valid from 2025-06-06 onwards |
+| `FV2510` | MIG/AHB versions valid from 2025-10-01 onwards |
+| `FV2604` | MIG/AHB versions valid from 2026-04-01 onwards |
+
+#### Helper Functions
+
+```typescript
+import {
+  getEdifactFormatVersion,
+  getCurrentEdifactFormatVersion,
+} from "transformer-bee-client";
+
+// Get the format version for a specific date
+const version = getEdifactFormatVersion(new Date("2024-07-15"));
+// Returns: EdifactFormatVersion.FV2404
+
+// Get the currently applicable format version
+const currentVersion = getCurrentEdifactFormatVersion();
+```
 
 ### BOneyComb
 
@@ -149,6 +199,14 @@ interface TransformerBeeClientConfig {
 }
 ```
 
+#### PreauthorizedTransformerBeeClient
+
+```typescript
+interface PreauthorizedClientConfig extends TransformerBeeClientConfig {
+  authorizationHeader: string; // Full Authorization header value
+}
+```
+
 #### AuthenticatedTransformerBeeClient
 
 ```typescript
@@ -162,7 +220,7 @@ interface AuthenticatedClientConfig extends TransformerBeeClientConfig {
 
 ### Methods
 
-Both clients implement the `TransformerBeeClient` interface:
+All clients implement the `TransformerBeeClient` interface:
 
 #### `edifactToBo4e(edifact: string, formatVersion: EdifactFormatVersion): Promise<BOneyComb>`
 
@@ -235,24 +293,40 @@ npm run format
 
 ### Running Integration Tests
 
-Integration tests require a running transformer.bee instance. Set environment variables:
+Integration tests use [testcontainers](https://node.testcontainers.org/) to automatically spin up a transformer.bee instance in Docker. Make sure Docker is running, then:
 
 ```bash
-export TRANSFORMER_BEE_URL=http://localhost:5021
-# Optional for authenticated tests:
-export TRANSFORMER_BEE_CLIENT_ID=your-client-id
-export TRANSFORMER_BEE_CLIENT_SECRET=your-client-secret
+# Login to GitHub Container Registry (required to pull the image)
+echo "$GHCR_PAT" | docker login ghcr.io -u $GHCR_USR --password-stdin
 
+# Run integration tests
 npm run test:integration
 ```
 
+The tests will automatically:
+1. Pull the transformer.bee Docker image from GitHub Container Registry
+2. Start a container
+3. Run the tests against it
+4. Clean up the container
+
 ## Release
 
-To release a new version:
+This package uses [npm OIDC trusted publishing](https://docs.npmjs.com/trusted-publishers/) for secure, tokenless releases directly from GitHub Actions.
+
+### Setup (one-time)
+
+1. Publish the package manually for the first time: `npm publish --access public`
+2. Configure the trusted publisher on npm at https://www.npmjs.com/package/transformer-bee-client/access:
+   - Organization/User: `Hochfrequenz`
+   - Repository: `TransformerBeeClient.ts`
+   - Workflow filename: `release.yml`
+
+### To release a new version
 
 1. Update the version in `package.json`
-2. Create a new release on GitHub with a tag starting with `v` (e.g., `v1.0.0`)
-3. The GitHub Action will automatically publish to npm
+2. Commit the version bump: `git commit -am "Bump version to x.y.z"`
+3. Create a new release on GitHub with a tag starting with `v` (e.g., `v1.0.0`)
+4. The GitHub Action will automatically build, test, and publish to npm (no token required)
 
 ## Contributing
 

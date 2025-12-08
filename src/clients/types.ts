@@ -48,6 +48,16 @@ export interface AuthenticatedClientConfig extends TransformerBeeClientConfig {
 }
 
 /**
+ * Configuration for client with a pre-provided authorization header.
+ */
+export interface PreauthorizedClientConfig extends TransformerBeeClientConfig {
+  /**
+   * The full Authorization header value (e.g., "Bearer <token>" or "Basic <credentials>").
+   */
+  authorizationHeader: string;
+}
+
+/**
  * Interface for transformer.bee API clients.
  *
  * Both authenticated and unauthenticated clients implement this interface,
