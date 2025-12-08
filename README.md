@@ -325,10 +325,13 @@ This package uses [npm OIDC trusted publishing](https://docs.npmjs.com/trusted-p
 
 ### To release a new version
 
-1. Update the version in `package.json`
-2. Commit the version bump: `git commit -am "Bump version to x.y.z"`
-3. Create a new release on GitHub with a tag starting with `v` (e.g., `v1.0.0`)
-4. The GitHub Action will automatically build, test, and publish to npm (no token required)
+1. Create a new release on GitHub with a tag starting with `v` (e.g., `v1.0.0`)
+2. The GitHub Action will automatically:
+   - Extract the version from the tag
+   - Update `package.json` with the version
+   - Build, test, and publish to npm (no token required)
+
+Note: The version in `package.json` is a placeholder (`0.0.0-development`) and is automatically updated during the release process based on the git tag.
 
 ## Contributing
 
