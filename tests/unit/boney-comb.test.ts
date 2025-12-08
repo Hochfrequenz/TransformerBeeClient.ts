@@ -6,7 +6,7 @@ import {
   createEmptyBOneyComb,
   parseBOneyComb,
   safeParseBOneyComb,
-} from "../../src/models/boney-comb";
+} from "../../src/dtos/boney-comb";
 
 describe("BOneyComb", () => {
   describe("BOneyCombSchema", () => {

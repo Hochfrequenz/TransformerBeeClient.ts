@@ -6,7 +6,7 @@ import {
   BOneyComb,
   AuthenticationError,
   Marktnachricht,
-} from "../../src/models";
+} from "../../src/dtos";
 
 // Mock global fetch
 const mockFetch = vi.fn();

@@ -1,4 +1,4 @@
-import { AuthenticationError, NetworkError } from "../models";
+import { AuthenticationError, NetworkError } from "../dtos";
 
 import { AuthenticatedClientConfig, StoredToken, TokenResponse } from "./types";
 import { UnauthenticatedTransformerBeeClient } from "./unauthenticated-client";

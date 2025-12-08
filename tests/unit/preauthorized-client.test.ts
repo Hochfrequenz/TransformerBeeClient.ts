@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { PreauthorizedTransformerBeeClient } from "../../src/clients/preauthorized-client";
-import { EdifactFormatVersion, BOneyComb, Marktnachricht } from "../../src/models";
+import { EdifactFormatVersion, BOneyComb, Marktnachricht } from "../../src/dtos";
 
 // Mock global fetch
 const mockFetch = vi.fn();

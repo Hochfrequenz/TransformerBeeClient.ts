@@ -1,4 +1,4 @@
-import { BOneyComb, EdifactFormatVersion, Marktnachricht } from "../models";
+import { BOneyComb, EdifactFormatVersion, Marktnachricht } from "../dtos";
 
 /**
  * Configuration options for the transformer.bee client.

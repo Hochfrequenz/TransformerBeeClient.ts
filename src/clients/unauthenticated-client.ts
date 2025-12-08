@@ -9,7 +9,7 @@ import {
   NetworkError,
   parseMarktnachrichtArray,
   TimeoutError,
-} from "../models";
+} from "../dtos";
 
 import { TransformerBeeClient, TransformerBeeClientConfig } from "./types";
 

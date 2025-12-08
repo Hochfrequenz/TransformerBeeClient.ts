@@ -6,7 +6,7 @@ import {
   parseEdifactFormatVersion,
   getEdifactFormatVersion,
   getCurrentEdifactFormatVersion,
-} from "../../src/models/edifact-format-version";
+} from "../../src/dtos/edifact-format-version";
 
 describe("EdifactFormatVersion", () => {
   describe("enum values", () => {

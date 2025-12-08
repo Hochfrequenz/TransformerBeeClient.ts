@@ -41,7 +41,7 @@
  * @packageDocumentation
  */
 
-// Export models
+// Export DTOs
 export {
   EdifactFormatVersion,
   getFormatVersionDescription,
@@ -68,7 +68,7 @@ export {
   Bo4eToEdifactConversionError,
   NetworkError,
   TimeoutError,
-} from "./models";
+} from "./dtos";
 
 // Export clients
 export {

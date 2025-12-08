@@ -8,7 +8,7 @@ import {
   Bo4eToEdifactConversionError,
   NetworkError,
   TimeoutError,
-} from "../../src/models/errors";
+} from "../../src/dtos/errors";
 
 describe("Error classes", () => {
   describe("TransformerBeeError", () => {
