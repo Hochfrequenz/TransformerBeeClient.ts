@@ -1,6 +1,6 @@
 {
   "name": "transformer-bee-client",
-  "version": "0.1.0",
+  "version": "0.0.0-development",
   "description": "An async TypeScript/JavaScript client for transformer.bee aka edifact-bo4e-converter",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
