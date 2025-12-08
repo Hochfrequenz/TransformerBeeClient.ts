@@ -2,6 +2,8 @@ export {
   EdifactFormatVersion,
   getFormatVersionDescription,
   parseEdifactFormatVersion,
+  getEdifactFormatVersion,
+  getCurrentEdifactFormatVersion,
 } from "./edifact-format-version";
 
 export {

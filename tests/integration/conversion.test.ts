@@ -1,54 +1,41 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { StartedTestContainer } from "testcontainers";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
-  UnauthenticatedTransformerBeeClient,
   AuthenticatedTransformerBeeClient,
-  EdifactFormatVersion,
   BOneyComb,
+  EdifactFormatVersion,
   TransformerBeeClient,
+  UnauthenticatedTransformerBeeClient,
 } from "../../src";
+
+import { getTransformerBeeUrl, startTransformerBeeContainer } from "./transformer-bee-container";
 
 /**
  * Integration tests for transformer.bee client.
  *
- * These tests require a running transformer.bee instance.
- * Set the following environment variables to run these tests:
- *
- * - TRANSFORMER_BEE_URL: Base URL of the transformer.bee service
- * - TRANSFORMER_BEE_CLIENT_ID: OAuth2 client ID (optional, for authenticated tests)
- * - TRANSFORMER_BEE_CLIENT_SECRET: OAuth2 client secret (optional, for authenticated tests)
+ * These tests use testcontainers to spin up a transformer.bee instance.
+ * Make sure Docker is running before executing these tests.
  *
  * To run integration tests:
  * npm run test:integration
  */
 
-// Skip integration tests if no URL is configured
-const TRANSFORMER_BEE_URL = process.env["TRANSFORMER_BEE_URL"];
-const CLIENT_ID = process.env["TRANSFORMER_BEE_CLIENT_ID"];
-const CLIENT_SECRET = process.env["TRANSFORMER_BEE_CLIENT_SECRET"];
-
-const describeIf = (condition: boolean) => (condition ? describe : describe.skip);
-
-describeIf(!!TRANSFORMER_BEE_URL)("Integration Tests", () => {
+describe("Integration Tests with Testcontainers", () => {
+  let container: StartedTestContainer;
   let client: TransformerBeeClient;
 
-  beforeAll(() => {
-    if (!TRANSFORMER_BEE_URL) {
-      throw new Error("TRANSFORMER_BEE_URL environment variable is required");
-    }
+  beforeAll(async () => {
+    container = await startTransformerBeeContainer();
+    const baseUrl = getTransformerBeeUrl(container);
 
-    // Use authenticated client if credentials are provided
-    if (CLIENT_ID && CLIENT_SECRET) {
-      client = new AuthenticatedTransformerBeeClient({
-        baseUrl: TRANSFORMER_BEE_URL,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-      });
-    } else {
-      client = new UnauthenticatedTransformerBeeClient({
-        baseUrl: TRANSFORMER_BEE_URL,
-      });
-    }
+    client = new UnauthenticatedTransformerBeeClient({
+      baseUrl,
+    });
+  }, 120000); // 2 minute timeout for container startup
+
+  afterAll(async () => {
+    await container?.stop();
   });
 
   describe("edifactToBo4e", () => {
@@ -142,21 +129,21 @@ UNZ+1+00000000000001'`;
   });
 });
 
-// Always run these basic smoke tests
+// Always run these basic smoke tests (no container needed)
 describe("Client instantiation", () => {
   it("should create UnauthenticatedTransformerBeeClient", () => {
-    const client = new UnauthenticatedTransformerBeeClient({
+    const testClient = new UnauthenticatedTransformerBeeClient({
       baseUrl: "http://localhost:5021",
     });
-    expect(client).toBeDefined();
+    expect(testClient).toBeDefined();
   });
 
   it("should create AuthenticatedTransformerBeeClient", () => {
-    const client = new AuthenticatedTransformerBeeClient({
+    const testClient = new AuthenticatedTransformerBeeClient({
       baseUrl: "https://transformer.utilibee.io",
       clientId: "test-id",
       clientSecret: "test-secret",
     });
-    expect(client).toBeDefined();
+    expect(testClient).toBeDefined();
   });
 });
