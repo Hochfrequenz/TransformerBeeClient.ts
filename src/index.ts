@@ -46,6 +46,8 @@ export {
   EdifactFormatVersion,
   getFormatVersionDescription,
   parseEdifactFormatVersion,
+  getEdifactFormatVersion,
+  getCurrentEdifactFormatVersion,
   type BOneyComb,
   type Bo4eObject,
   type Transaktionsdaten,
@@ -75,7 +77,9 @@ export {
   type TransformerBeeClient,
   type TransformerBeeClientConfig,
   type AuthenticatedClientConfig,
+  type PreauthorizedClientConfig,
   type TokenResponse,
   UnauthenticatedTransformerBeeClient,
   AuthenticatedTransformerBeeClient,
+  PreauthorizedTransformerBeeClient,
 } from "./clients";

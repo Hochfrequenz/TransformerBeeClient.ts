@@ -1,4 +1,4 @@
-import { AuthenticationError, NetworkError } from "../dtos";
+import { AuthenticationError, NetworkError, TimeoutError } from "../dtos";
 
 import { AuthenticatedClientConfig, StoredToken, TokenResponse } from "./types";
 import { UnauthenticatedTransformerBeeClient } from "./unauthenticated-client";
@@ -83,6 +83,9 @@ export class AuthenticatedTransformerBeeClient extends UnauthenticatedTransforme
       scope: this.scope,
     });
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
     try {
       const response = await fetch(this.tokenEndpoint, {
         method: "POST",
@@ -90,7 +93,10 @@ export class AuthenticatedTransformerBeeClient extends UnauthenticatedTransforme
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: body.toString(),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -113,11 +119,16 @@ export class AuthenticatedTransformerBeeClient extends UnauthenticatedTransforme
         expiresAt,
       };
     } catch (error) {
+      clearTimeout(timeoutId);
+
       if (error instanceof AuthenticationError) {
         throw error;
       }
 
       if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          throw new TimeoutError(`Token acquisition timed out after ${this.timeout}ms`);
+        }
         throw new NetworkError(`Failed to acquire token: ${error.message}`, error);
       }
 

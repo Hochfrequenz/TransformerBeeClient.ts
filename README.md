@@ -65,13 +65,15 @@ const client = new UnauthenticatedTransformerBeeClient({
 
 // Convert EDIFACT to BO4E
 const edifactMessage = "UNA:+.? 'UNB+UNOC:3+...";
-const boneyComb = await client.edifactToBo4e(
+const messages = await client.edifactToBo4e(
   edifactMessage,
   EdifactFormatVersion.FV2310
 );
 
-console.log(boneyComb.stammdaten);
-console.log(boneyComb.transaktionsdaten);
+// Access the first message's transactions
+const firstMessage = messages[0];
+console.log(firstMessage.transaktionen); // Array of BOneyComb
+console.log(firstMessage.stammdaten); // Message-level master data
 ```
 
 ### Preauthorized Client (with existing token)
@@ -96,7 +98,7 @@ const basicClient = new PreauthorizedTransformerBeeClient({
   authorizationHeader: "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
 });
 
-const boneyComb = await client.edifactToBo4e(
+const messages = await client.edifactToBo4e(
   edifactMessage,
   EdifactFormatVersion.FV2310
 );
@@ -222,9 +224,9 @@ interface AuthenticatedClientConfig extends TransformerBeeClientConfig {
 
 All clients implement the `TransformerBeeClient` interface:
 
-#### `edifactToBo4e(edifact: string, formatVersion: EdifactFormatVersion): Promise<BOneyComb>`
+#### `edifactToBo4e(edifact: string, formatVersion: EdifactFormatVersion): Promise<Marktnachricht[]>`
 
-Converts an EDIFACT message to BO4E format.
+Converts an EDIFACT message to BO4E format. Returns an array of `Marktnachricht` objects, where each message contains `transaktionen` (an array of `BOneyComb` objects).
 
 #### `bo4eToEdifact(boneyComb: BOneyComb, formatVersion: EdifactFormatVersion): Promise<string>`
 
