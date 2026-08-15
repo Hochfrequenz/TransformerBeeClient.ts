@@ -69,6 +69,7 @@
     "vitest": "^1.0.0"
   },
   "dependencies": {
+    "@hochfrequenz/efoli": "^0.0.8",
     "zod": "^3.22.0"
   }
 }
