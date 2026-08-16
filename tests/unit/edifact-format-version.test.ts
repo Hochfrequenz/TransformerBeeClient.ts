@@ -248,6 +248,15 @@ describe("EdifactFormatVersion", () => {
       const date = new Date(Date.UTC(2030, 0, 1)); // 2030-01-01
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2610);
     });
+
+    // The cutover is midnight Berlin time, which in October is CEST (UTC+2),
+    // so the instant is 2026-09-30T22:00:00Z — not 2026-10-01T00:00:00Z.
+    it("should switch to FV2610 exactly at midnight Berlin on 2026-10-01", () => {
+      const justBefore = new Date("2026-09-30T21:59:59Z");
+      const atCutover = new Date("2026-09-30T22:00:00Z");
+      expect(getEdifactFormatVersion(justBefore)).toBe(EdifactFormatVersion.FV2604);
+      expect(getEdifactFormatVersion(atCutover)).toBe(EdifactFormatVersion.FV2610);
+    });
   });
 
   describe("getCurrentEdifactFormatVersion", () => {
