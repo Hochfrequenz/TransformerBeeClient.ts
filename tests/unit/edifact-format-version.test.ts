@@ -49,6 +49,10 @@ describe("EdifactFormatVersion", () => {
     it("should have FV2604 version", () => {
       expect(EdifactFormatVersion.FV2604).toBe("FV2604");
     });
+
+    it("should have FV2610 version", () => {
+      expect(EdifactFormatVersion.FV2610).toBe("FV2610");
+    });
   });
 
   describe("getFormatVersionDescription", () => {
@@ -101,6 +105,11 @@ describe("EdifactFormatVersion", () => {
       const description = getFormatVersionDescription(EdifactFormatVersion.FV2604);
       expect(description).toContain("2026-04-01");
     });
+
+    it("should return description for FV2610", () => {
+      const description = getFormatVersionDescription(EdifactFormatVersion.FV2610);
+      expect(description).toContain("2026-10-01");
+    });
   });
 
   describe("parseEdifactFormatVersion", () => {
@@ -152,6 +161,11 @@ describe("EdifactFormatVersion", () => {
     it("should parse valid version string FV2604", () => {
       const result = parseEdifactFormatVersion("FV2604");
       expect(result).toBe(EdifactFormatVersion.FV2604);
+    });
+
+    it("should parse valid version string FV2610", () => {
+      const result = parseEdifactFormatVersion("FV2610");
+      expect(result).toBe(EdifactFormatVersion.FV2610);
     });
 
     it("should throw for invalid version string", () => {
@@ -225,14 +239,23 @@ describe("EdifactFormatVersion", () => {
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2510);
     });
 
-    it("should return FV2604 for dates after 2026-04-01", () => {
+    it("should return FV2604 for dates between 2026-04-01 and 2026-10-01", () => {
       const date = new Date(Date.UTC(2026, 6, 15)); // 2026-07-15
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2604);
     });
 
-    it("should return FV2604 for far future dates", () => {
+    it("should return FV2610 for dates after 2026-10-01", () => {
       const date = new Date(Date.UTC(2030, 0, 1)); // 2030-01-01
-      expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2604);
+      expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2610);
+    });
+
+    // The cutover is midnight Berlin time, which in October is CEST (UTC+2),
+    // so the instant is 2026-09-30T22:00:00Z — not 2026-10-01T00:00:00Z.
+    it("should switch to FV2610 exactly at midnight Berlin on 2026-10-01", () => {
+      const justBefore = new Date("2026-09-30T21:59:59Z");
+      const atCutover = new Date("2026-09-30T22:00:00Z");
+      expect(getEdifactFormatVersion(justBefore)).toBe(EdifactFormatVersion.FV2604);
+      expect(getEdifactFormatVersion(atCutover)).toBe(EdifactFormatVersion.FV2610);
     });
   });
 

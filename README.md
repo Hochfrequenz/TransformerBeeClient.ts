@@ -7,6 +7,7 @@
 This library is a TypeScript/JavaScript HTTP client for **transformer.bee** aka edifact-bo4e-converter.
 
 We also maintain:
+
 - [Python version](https://github.com/Hochfrequenz/TransformerBeeClient.py) of this client
 - [.NET version](https://github.com/Hochfrequenz/TransformerBeeClient.NET) of this client
 
@@ -54,10 +55,7 @@ You can check if your account is working by logging [into our stage environment]
 If you're hosting transformer.bee in the same network or your localhost without authentication:
 
 ```typescript
-import {
-  UnauthenticatedTransformerBeeClient,
-  EdifactFormatVersion,
-} from "transformer-bee-client";
+import { UnauthenticatedTransformerBeeClient, EdifactFormatVersion } from "transformer-bee-client";
 
 const client = new UnauthenticatedTransformerBeeClient({
   baseUrl: "http://localhost:5021",
@@ -65,10 +63,7 @@ const client = new UnauthenticatedTransformerBeeClient({
 
 // Convert EDIFACT to BO4E
 const edifactMessage = "UNA:+.? 'UNB+UNOC:3+...";
-const messages = await client.edifactToBo4e(
-  edifactMessage,
-  EdifactFormatVersion.FV2310
-);
+const messages = await client.edifactToBo4e(edifactMessage, EdifactFormatVersion.FV2310);
 
 // Access the first message's transactions
 const firstMessage = messages[0];
@@ -81,10 +76,7 @@ console.log(firstMessage.stammdaten); // Message-level master data
 If you already have an authorization token (e.g., from another service or a custom auth flow):
 
 ```typescript
-import {
-  PreauthorizedTransformerBeeClient,
-  EdifactFormatVersion,
-} from "transformer-bee-client";
+import { PreauthorizedTransformerBeeClient, EdifactFormatVersion } from "transformer-bee-client";
 
 // Using a pre-acquired Bearer token
 const client = new PreauthorizedTransformerBeeClient({
@@ -98,10 +90,7 @@ const basicClient = new PreauthorizedTransformerBeeClient({
   authorizationHeader: "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
 });
 
-const messages = await client.edifactToBo4e(
-  edifactMessage,
-  EdifactFormatVersion.FV2310
-);
+const messages = await client.edifactToBo4e(edifactMessage, EdifactFormatVersion.FV2310);
 ```
 
 ### Authenticated Client (Production with OAuth2)
@@ -135,10 +124,7 @@ const boneyComb: BOneyComb = {
   },
 };
 
-const edifact = await client.bo4eToEdifact(
-  boneyComb,
-  EdifactFormatVersion.FV2310
-);
+const edifact = await client.bo4eToEdifact(boneyComb, EdifactFormatVersion.FV2310);
 
 console.log(edifact);
 ```
@@ -149,26 +135,24 @@ console.log(edifact);
 
 An enum representing the EDIFACT format versions (see [efoli](https://github.com/Hochfrequenz/efoli) for the source of truth):
 
-| Version | Description |
-|---------|-------------|
-| `FV2104` | MIG/AHB versions valid from 2021-04-01 until 2021-10-01 |
-| `FV2110` | MIG/AHB versions valid from 2021-10-01 until 2022-04-01 |
+| Version  | Description                                                |
+| -------- | ---------------------------------------------------------- |
+| `FV2104` | MIG/AHB versions valid from 2021-04-01 until 2021-10-01    |
+| `FV2110` | MIG/AHB versions valid from 2021-10-01 until 2022-04-01    |
 | `FV2210` | MIG/AHB versions valid from 2022-10-01 onwards (MaKo 2022) |
-| `FV2304` | MIG/AHB versions valid from 2023-04-01 onwards |
-| `FV2310` | MIG/AHB versions valid from 2023-10-01 onwards |
-| `FV2404` | MIG/AHB versions valid from 2024-04-01 onwards |
-| `FV2410` | MIG/AHB versions valid from 2024-10-01 onwards |
-| `FV2504` | MIG/AHB versions valid from 2025-06-06 onwards |
-| `FV2510` | MIG/AHB versions valid from 2025-10-01 onwards |
-| `FV2604` | MIG/AHB versions valid from 2026-04-01 onwards |
+| `FV2304` | MIG/AHB versions valid from 2023-04-01 onwards             |
+| `FV2310` | MIG/AHB versions valid from 2023-10-01 onwards             |
+| `FV2404` | MIG/AHB versions valid from 2024-04-01 onwards             |
+| `FV2410` | MIG/AHB versions valid from 2024-10-01 onwards             |
+| `FV2504` | MIG/AHB versions valid from 2025-06-06 onwards             |
+| `FV2510` | MIG/AHB versions valid from 2025-10-01 onwards             |
+| `FV2604` | MIG/AHB versions valid from 2026-04-01 onwards             |
+| `FV2610` | MIG/AHB versions valid from 2026-10-01 onwards             |
 
 #### Helper Functions
 
 ```typescript
-import {
-  getEdifactFormatVersion,
-  getCurrentEdifactFormatVersion,
-} from "transformer-bee-client";
+import { getEdifactFormatVersion, getCurrentEdifactFormatVersion } from "transformer-bee-client";
 
 // Get the format version for a specific date
 const version = getEdifactFormatVersion(new Date("2024-07-15"));
@@ -184,7 +168,7 @@ The container format for BO4E data:
 
 ```typescript
 interface BOneyComb {
-  stammdaten: Bo4eObject[];      // Array of BO4E business objects
+  stammdaten: Bo4eObject[]; // Array of BO4E business objects
   transaktionsdaten: Record<string, unknown>; // Transaction-specific data
 }
 ```
@@ -195,8 +179,8 @@ interface BOneyComb {
 
 ```typescript
 interface TransformerBeeClientConfig {
-  baseUrl: string;           // Base URL of transformer.bee
-  timeout?: number;          // Request timeout in ms (default: 30000)
+  baseUrl: string; // Base URL of transformer.bee
+  timeout?: number; // Request timeout in ms (default: 30000)
   headers?: Record<string, string>; // Custom headers
 }
 ```
@@ -213,10 +197,10 @@ interface PreauthorizedClientConfig extends TransformerBeeClientConfig {
 
 ```typescript
 interface AuthenticatedClientConfig extends TransformerBeeClientConfig {
-  clientId: string;          // OAuth2 client ID
-  clientSecret: string;      // OAuth2 client secret
-  tokenEndpoint?: string;    // Custom token endpoint URL
-  scope?: string;            // OAuth2 scope
+  clientId: string; // OAuth2 client ID
+  clientSecret: string; // OAuth2 client secret
+  tokenEndpoint?: string; // Custom token endpoint URL
+  scope?: string; // OAuth2 scope
 }
 ```
 
@@ -238,13 +222,13 @@ The library provides specific error classes:
 
 ```typescript
 import {
-  TransformerBeeError,      // Base error class
-  AuthenticationError,       // OAuth2 authentication failed
-  ApiError,                  // API returned an error
+  TransformerBeeError, // Base error class
+  AuthenticationError, // OAuth2 authentication failed
+  ApiError, // API returned an error
   EdifactToBo4eConversionError,
   Bo4eToEdifactConversionError,
-  NetworkError,              // Network request failed
-  TimeoutError,              // Request timed out
+  NetworkError, // Network request failed
+  TimeoutError, // Request timed out
 } from "transformer-bee-client";
 
 try {
@@ -306,6 +290,7 @@ npm run test:integration
 ```
 
 The tests will automatically:
+
 1. Pull the transformer.bee Docker image from GitHub Container Registry
 2. Start a container
 3. Run the tests against it
