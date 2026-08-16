@@ -4,7 +4,8 @@ import { GenericContainer, StartedTestContainer, Wait } from "testcontainers";
  * The Docker image for transformer.bee (edifact-bo4e-converter).
  * Source: https://github.com/Hochfrequenz/TransformerBeeClient.py/blob/main/integrationtests/conftest.py
  */
-const TRANSFORMER_BEE_IMAGE = "ghcr.io/enercity/edifact-bo4e-converter/edifactbo4econverter:v1.4.1";
+const TRANSFORMER_BEE_IMAGE =
+  "ghcr.io/enercity/edifact-bo4e-converter/edifactbo4econverter:v1.31.0";
 
 /**
  * The REST API port exposed by transformer.bee.
