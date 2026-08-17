@@ -4,7 +4,8 @@ import { GenericContainer, StartedTestContainer, Wait } from "testcontainers";
  * The Docker image for transformer.bee (edifact-bo4e-converter).
  * Source: https://github.com/Hochfrequenz/TransformerBeeClient.py/blob/main/integrationtests/conftest.py
  */
-const TRANSFORMER_BEE_IMAGE = "ghcr.io/enercity/edifact-bo4e-converter/edifactbo4econverter:v1.4.1";
+const TRANSFORMER_BEE_IMAGE =
+  "ghcr.io/enercity/edifact-bo4e-converter/edifactbo4econverter:v1.31.0";
 
 /**
  * The REST API port exposed by transformer.bee.
@@ -20,8 +21,11 @@ export async function startTransformerBeeContainer(): Promise<StartedTestContain
   const container = await new GenericContainer(TRANSFORMER_BEE_IMAGE)
     .withExposedPorts(TRANSFORMER_BEE_REST_PORT)
     .withEnvironment({ StorageProvider: "Directory" })
-    .withWaitStrategy(Wait.forLogMessage(/Application started\. Press Ctrl\+C to shut down\./))
-    .withStartupTimeout(60000)
+    // Since the converter switched to structured (JSON) logging, it no longer emits the
+    // "Application started. Press Ctrl+C to shut down." line, so we poll the /version endpoint
+    // (the same one used as readiness probe in the converter's kubernetes deployment) instead.
+    .withWaitStrategy(Wait.forHttp("/version", TRANSFORMER_BEE_REST_PORT).forStatusCode(200))
+    .withStartupTimeout(120000)
     .start();
 
   return container;
