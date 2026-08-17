@@ -21,8 +21,11 @@ export async function startTransformerBeeContainer(): Promise<StartedTestContain
   const container = await new GenericContainer(TRANSFORMER_BEE_IMAGE)
     .withExposedPorts(TRANSFORMER_BEE_REST_PORT)
     .withEnvironment({ StorageProvider: "Directory" })
-    .withWaitStrategy(Wait.forLogMessage(/Application started\. Press Ctrl\+C to shut down\./))
-    .withStartupTimeout(60000)
+    // Since the converter switched to structured (JSON) logging, it no longer emits the
+    // "Application started. Press Ctrl+C to shut down." line, so we poll the /version endpoint
+    // (the same one used as readiness probe in the converter's kubernetes deployment) instead.
+    .withWaitStrategy(Wait.forHttp("/version", TRANSFORMER_BEE_REST_PORT).forStatusCode(200))
+    .withStartupTimeout(120000)
     .start();
 
   return container;
