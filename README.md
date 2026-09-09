@@ -148,6 +148,7 @@ An enum representing the EDIFACT format versions (see [efoli](https://github.com
 | `FV2510` | MIG/AHB versions valid from 2025-10-01 onwards             |
 | `FV2604` | MIG/AHB versions valid from 2026-04-01 onwards             |
 | `FV2610` | MIG/AHB versions valid from 2026-10-01 onwards             |
+| `FV2704` | MIG/AHB versions valid from 2027-04-01 onwards             |
 
 #### Helper Functions
 
