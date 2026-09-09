@@ -82,8 +82,11 @@ describe("EdifactFormatVersion", () => {
     });
 
     it("should return description for FV2404", () => {
+      // 2024-04-03, not 2024-04-01: efoli's threshold for FV2404 is 2024-04-02T22:00Z, so
+      // 2024-04-01 and 2024-04-02 both still resolve to FV2310. This assertion used to pin the
+      // wrong date, which is why the description stayed wrong.
       const description = getFormatVersionDescription(EdifactFormatVersion.FV2404);
-      expect(description).toContain("2024-04-01");
+      expect(description).toContain("2024-04-03");
     });
 
     it("should return description for FV2410", () => {

@@ -18,7 +18,7 @@ export function getFormatVersionDescription(version: EdifactFormatVersion): stri
     [EdifactFormatVersion.FV2210]: "MIG/AHB versions valid from 2022-10-01 onwards (MaKo 2022)",
     [EdifactFormatVersion.FV2304]: "MIG/AHB versions valid from 2023-04-01 onwards",
     [EdifactFormatVersion.FV2310]: "MIG/AHB versions valid from 2023-10-01 onwards",
-    [EdifactFormatVersion.FV2404]: "MIG/AHB versions valid from 2024-04-01 onwards",
+    [EdifactFormatVersion.FV2404]: "MIG/AHB versions valid from 2024-04-03 onwards",
     [EdifactFormatVersion.FV2410]: "MIG/AHB versions valid from 2024-10-01 onwards",
     [EdifactFormatVersion.FV2504]: "MIG/AHB versions valid from 2025-06-06 onwards",
     [EdifactFormatVersion.FV2510]: "MIG/AHB versions valid from 2025-10-01 onwards",
