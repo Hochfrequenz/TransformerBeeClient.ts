@@ -64,6 +64,9 @@ describe("EdifactFormatVersion", () => {
     it("should return description for FV2110", () => {
       const description = getFormatVersionDescription(EdifactFormatVersion.FV2110);
       expect(description).toContain("2021-10-01");
+      // The "until" date is asserted because it was stale (2022-04-01, the abandoned FV2204
+      // plan) and nothing guarded it: every other description test checks only the from date.
+      expect(description).toContain("2022-10-01");
     });
 
     it("should return description for FV2210", () => {
@@ -82,8 +85,11 @@ describe("EdifactFormatVersion", () => {
     });
 
     it("should return description for FV2404", () => {
+      // 2024-04-03, not 2024-04-01: efoli's threshold for FV2404 is 2024-04-02T22:00Z, so
+      // 2024-04-01 and 2024-04-02 both still resolve to FV2310. This assertion used to pin the
+      // wrong date, which is why the description stayed wrong.
       const description = getFormatVersionDescription(EdifactFormatVersion.FV2404);
-      expect(description).toContain("2024-04-01");
+      expect(description).toContain("2024-04-03");
     });
 
     it("should return description for FV2410", () => {
