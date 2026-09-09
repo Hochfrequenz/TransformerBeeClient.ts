@@ -64,6 +64,9 @@ describe("EdifactFormatVersion", () => {
     it("should return description for FV2110", () => {
       const description = getFormatVersionDescription(EdifactFormatVersion.FV2110);
       expect(description).toContain("2021-10-01");
+      // The "until" date is asserted because it was stale (2022-04-01, the abandoned FV2204
+      // plan) and nothing guarded it: every other description test checks only the from date.
+      expect(description).toContain("2022-10-01");
     });
 
     it("should return description for FV2210", () => {

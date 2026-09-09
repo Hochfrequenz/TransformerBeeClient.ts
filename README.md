@@ -138,7 +138,7 @@ An enum representing the EDIFACT format versions (see [efoli](https://github.com
 | Version  | Description                                                |
 | -------- | ---------------------------------------------------------- |
 | `FV2104` | MIG/AHB versions valid from 2021-04-01 until 2021-10-01    |
-| `FV2110` | MIG/AHB versions valid from 2021-10-01 until 2022-04-01    |
+| `FV2110` | MIG/AHB versions valid from 2021-10-01 until 2022-10-01    |
 | `FV2210` | MIG/AHB versions valid from 2022-10-01 onwards (MaKo 2022) |
 | `FV2304` | MIG/AHB versions valid from 2023-04-01 onwards             |
 | `FV2310` | MIG/AHB versions valid from 2023-10-01 onwards             |

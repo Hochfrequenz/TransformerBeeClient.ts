@@ -14,7 +14,7 @@ import { EdifactFormatVersion } from "@hochfrequenz/efoli";
 export function getFormatVersionDescription(version: EdifactFormatVersion): string {
   const descriptions: Record<EdifactFormatVersion, string> = {
     [EdifactFormatVersion.FV2104]: "MIG/AHB versions valid from 2021-04-01 until 2021-10-01",
-    [EdifactFormatVersion.FV2110]: "MIG/AHB versions valid from 2021-10-01 until 2022-04-01",
+    [EdifactFormatVersion.FV2110]: "MIG/AHB versions valid from 2021-10-01 until 2022-10-01",
     [EdifactFormatVersion.FV2210]: "MIG/AHB versions valid from 2022-10-01 onwards (MaKo 2022)",
     [EdifactFormatVersion.FV2304]: "MIG/AHB versions valid from 2023-04-01 onwards",
     [EdifactFormatVersion.FV2310]: "MIG/AHB versions valid from 2023-10-01 onwards",
