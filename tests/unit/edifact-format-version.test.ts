@@ -244,9 +244,24 @@ describe("EdifactFormatVersion", () => {
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2604);
     });
 
-    it("should return FV2610 for dates after 2026-10-01", () => {
-      const date = new Date(Date.UTC(2030, 0, 1)); // 2030-01-01
+    it("should return FV2610 for dates between 2026-10-01 and 2027-04-01", () => {
+      const date = new Date(Date.UTC(2026, 11, 1)); // 2026-12-01
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2610);
+    });
+
+    it("should return FV2704 for dates after 2027-04-01", () => {
+      const date = new Date(Date.UTC(2027, 5, 1)); // 2027-06-01
+      expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2704);
+    });
+
+    it("should saturate to the newest known format version for far-future dates", () => {
+      // Deliberately derived rather than a literal: this test used to assert FV2610 for
+      // 2030-01-01, so it broke the moment efoli learned a newer format version. A far-future
+      // date means "beyond what this efoli release knows", so the newest member is the only
+      // stable expectation.
+      const allVersions = Object.values(EdifactFormatVersion);
+      const newest = allVersions[allVersions.length - 1];
+      expect(getEdifactFormatVersion(new Date(Date.UTC(2050, 0, 1)))).toBe(newest);
     });
 
     // The cutover is midnight Berlin time, which in October is CEST (UTC+2),

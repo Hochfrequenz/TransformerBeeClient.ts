@@ -24,6 +24,7 @@ export function getFormatVersionDescription(version: EdifactFormatVersion): stri
     [EdifactFormatVersion.FV2510]: "MIG/AHB versions valid from 2025-10-01 onwards",
     [EdifactFormatVersion.FV2604]: "MIG/AHB versions valid from 2026-04-01 onwards",
     [EdifactFormatVersion.FV2610]: "MIG/AHB versions valid from 2026-10-01 onwards",
+    [EdifactFormatVersion.FV2704]: "MIG/AHB versions valid from 2027-04-01 onwards",
   };
   return descriptions[version];
 }
