@@ -249,6 +249,16 @@ describe("EdifactFormatVersion", () => {
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2610);
     });
 
+    it("should saturate to the newest known format version for far-future dates", () => {
+      // Deliberately derived rather than a literal: this test used to assert FV2610 for
+      // 2030-01-01, so it broke the moment efoli learned a newer format version. A far-future
+      // date means "beyond what this efoli release knows", so the newest member is the only
+      // stable expectation.
+      const allVersions = Object.values(EdifactFormatVersion);
+      const newest = allVersions[allVersions.length - 1];
+      expect(getEdifactFormatVersion(new Date(Date.UTC(2050, 0, 1)))).toBe(newest);
+    });
+
     // The cutover is midnight Berlin time, which in October is CEST (UTC+2),
     // so the instant is 2026-09-30T22:00:00Z — not 2026-10-01T00:00:00Z.
     it("should switch to FV2610 exactly at midnight Berlin on 2026-10-01", () => {
