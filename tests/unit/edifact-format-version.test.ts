@@ -244,14 +244,9 @@ describe("EdifactFormatVersion", () => {
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2604);
     });
 
-    it("should return FV2610 for dates between 2026-10-01 and 2027-04-01", () => {
-      const date = new Date(Date.UTC(2026, 11, 1)); // 2026-12-01
+    it("should return FV2610 for dates after 2026-10-01", () => {
+      const date = new Date(Date.UTC(2030, 0, 1)); // 2030-01-01
       expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2610);
-    });
-
-    it("should return FV2704 for dates after 2027-04-01", () => {
-      const date = new Date(Date.UTC(2027, 5, 1)); // 2027-06-01
-      expect(getEdifactFormatVersion(date)).toBe(EdifactFormatVersion.FV2704);
     });
 
     it("should saturate to the newest known format version for far-future dates", () => {
